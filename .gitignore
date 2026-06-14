@@ -1,0 +1,24 @@
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Dependencies
+node_modules/
+
+# Logs
+*.log
+
+# Temporary
+*.tmp
+*.temp
+
+# Large files (optional - uncomment if needed)
+# images/*.mp4
+# music/*.mp3
