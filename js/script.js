@@ -481,14 +481,11 @@ class CountdownTimer {
     }
 
     updateTogether(istNow) {
-        // Get IST date components properly
-        const istString = istNow.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
-        const istParts = new Date(istString);
-
-        const startY = 2026, startM = 2, startD = 14; // March = month 2 (0-indexed)
-        const curY = istParts.getFullYear();
-        const curM = istParts.getMonth();
-        const curD = istParts.getDate();
+        // Simple date calculation using UTC
+        const startY = 2026, startM = 2, startD = 14; // March 14, 2026
+        const curY = istNow.getUTCFullYear();
+        const curM = istNow.getUTCMonth();
+        const curD = istNow.getUTCDate();
 
         let months = (curY - startY) * 12 + (curM - startM);
         let days = curD - startD;
