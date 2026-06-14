@@ -625,14 +625,19 @@ class KeyboardShortcuts {
     }
 
     toggleMusic() {
-        if (elements.bgMusic.src) {
-            if (this.musicPlaying) {
-                elements.bgMusic.pause();
-            } else {
-                elements.bgMusic.play();
-            }
-            this.musicPlaying = !this.musicPlaying;
+        const fabMusic = document.getElementById('fabMusic');
+        if (!elements.bgMusic.src && !elements.bgMusic.currentSrc) return;
+        
+        if (this.musicPlaying) {
+            elements.bgMusic.pause();
+            if (fabMusic) fabMusic.textContent = '🎵';
+            if (fabMusic) fabMusic.classList.remove('playing');
+        } else {
+            elements.bgMusic.play().catch(() => {});
+            if (fabMusic) fabMusic.textContent = '🎶';
+            if (fabMusic) fabMusic.classList.add('playing');
         }
+        this.musicPlaying = !this.musicPlaying;
     }
 }
 
