@@ -344,7 +344,6 @@ class CountdownTimer {
         this.startY = 2026;
         this.startM = 2;
         this.startD = 14;
-        this.celebrated = false;
         this.update();
         setInterval(() => this.update(), 1000);
     }
@@ -357,16 +356,6 @@ class CountdownTimer {
         const h = ist.getHours();
         const min = ist.getMinutes();
         const s = ist.getSeconds();
-
-        const nowMs = Date.now();
-
-        // Anniversary check
-        const totalMonths = (y - this.startY) * 12 + (m - this.startM);
-        if (d === 14 && totalMonths > 0 && !this.celebrated) {
-            this.celebrated = true;
-            this.showCelebration(totalMonths);
-        }
-        if (d !== 14) this.celebrated = false;
 
         // Next 14th
         let nextY = y, nextM = m;
@@ -430,29 +419,7 @@ class CountdownTimer {
             }, 150);
         }
     }
-
-    showCelebration(months) {
-        if (document.getElementById('specialOverlay')) return;
-        const name = months <= 12 ? `${months} Month${months > 1 ? 's' : ''}` : `${Math.floor(months / 12)} Year${Math.floor(months / 12) > 1 ? 's' : ''}`;
-        const overlay = document.createElement('div');
-        overlay.id = 'specialOverlay';
-        overlay.innerHTML = `
-            <div class="celebration-content">
-                <div class="celebration-emoji">🎉</div>
-                <h1 class="celebration-title">Happy ${name} Anniversary!</h1>
-                <p class="celebration-subtitle">Today we celebrate our love</p>
-                <div class="celebration-hearts">
-                    <span>❤️</span><span>💕</span><span>💖</span><span>💗</span><span>💝</span>
-                </div>
-                <button class="celebration-btn" onclick="this.parentElement.parentElement.remove()">
-                    I Love You Too ❤️
-                </button>
-            </div>
-        `;
-        document.body.appendChild(overlay);
-        setTimeout(() => new ConfettiEffect().create(), 500);
-        this.celebInterval = setInterval(() => new ConfettiEffect().create(), 3000);
-    }
+}
 }
 
 // ========================================
