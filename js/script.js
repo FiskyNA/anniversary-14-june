@@ -378,6 +378,7 @@ class CountdownTimer {
         this.animate(elements.seconds, seconds);
 
         // Milestone label
+        const totalMonths = (y - this.startY) * 12 + (m - this.startM);
         const nextMonths = totalMonths + 1;
         const emojis = ['🌸','💕','💖','💗','💝','✨','🌟','💫','🎆','🎇','🎉','🎂'];
         const emoji = emojis[(nextMonths - 1) % emojis.length] || '❤️';
