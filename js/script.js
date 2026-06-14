@@ -409,16 +409,12 @@ class CountdownTimer {
         const remMonths = tMonths % 12;
 
         // Live clock - hours, minutes, seconds from current time
-        const hours = h;
-        const minutes = min;
-        const seconds = s;
-
         if (elements.togetherYears) elements.togetherYears.textContent = years;
         if (elements.togetherMonths) elements.togetherMonths.textContent = remMonths;
         if (elements.togetherDays) elements.togetherDays.textContent = tDays;
-        if (elements.togetherHours) elements.togetherHours.textContent = hours;
-        if (elements.togetherMinutes) elements.togetherMinutes.textContent = minutes;
-        if (elements.togetherSeconds) elements.togetherSeconds.textContent = seconds;
+        if (elements.togetherHours) elements.togetherHours.textContent = h;
+        if (elements.togetherMinutes) elements.togetherMinutes.textContent = min;
+        if (elements.togetherSeconds) elements.togetherSeconds.textContent = s;
     }
 
     animate(el, val) {
