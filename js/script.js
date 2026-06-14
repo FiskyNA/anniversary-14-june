@@ -47,6 +47,9 @@ const elements = {
     togetherYears: document.getElementById('togetherYears'),
     togetherMonths: document.getElementById('togetherMonths'),
     togetherDays: document.getElementById('togetherDays'),
+    togetherHours: document.getElementById('togetherHours'),
+    togetherMinutes: document.getElementById('togetherMinutes'),
+    togetherSeconds: document.getElementById('togetherSeconds'),
     lightbox: document.getElementById('lightbox'),
     lightboxImage: document.getElementById('lightboxImage'),
     lightboxCaption: document.getElementById('lightboxCaption'),
@@ -56,7 +59,9 @@ const elements = {
     footerDate: document.getElementById('footerDate'),
     floatingHearts: document.getElementById('floatingHearts'),
     galleryGrid: document.getElementById('galleryGrid'),
-    letterContainer: document.getElementById('letterContainer')
+    letterContainer: document.getElementById('letterContainer'),
+    progressBar: document.getElementById('progressBar'),
+    progressText: document.getElementById('progressText')
 };
 
 // ========================================
@@ -403,9 +408,17 @@ class CountdownTimer {
         const years = Math.floor(tMonths / 12);
         const remMonths = tMonths % 12;
 
+        // Live clock - hours, minutes, seconds from current time
+        const hours = h;
+        const minutes = min;
+        const seconds = s;
+
         if (elements.togetherYears) elements.togetherYears.textContent = years;
         if (elements.togetherMonths) elements.togetherMonths.textContent = remMonths;
         if (elements.togetherDays) elements.togetherDays.textContent = tDays;
+        if (elements.togetherHours) elements.togetherHours.textContent = hours;
+        if (elements.togetherMinutes) elements.togetherMinutes.textContent = minutes;
+        if (elements.togetherSeconds) elements.togetherSeconds.textContent = seconds;
     }
 
     animate(el, val) {
@@ -437,6 +450,24 @@ class MilestonesAnimator {
         }, { threshold: 0.2 });
         
         this.milestones.forEach(m => this.observer.observe(m));
+    }
+}
+
+// ========================================
+// Scroll Reveal
+// ========================================
+class ScrollReveal {
+    constructor() {
+        this.revealElements = document.querySelectorAll('.reveal');
+        this.observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        this.revealElements.forEach(el => this.observer.observe(el));
     }
 }
 
@@ -478,23 +509,230 @@ class Gallery {
 }
 
 // ========================================
-// Love Letter Reveal
+// Typewriter Effect (replaces LoveLetterReveal)
 // ========================================
-class LoveLetterReveal {
+class TypewriterEffect {
     constructor() {
         this.paragraphs = document.querySelectorAll('.letter-paragraph');
         this.observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const revealOrder = entry.target.dataset.reveal;
-                    setTimeout(() => {
-                        entry.target.classList.add('visible');
-                    }, revealOrder * 200);
+                if (entry.isIntersecting && !entry.target.dataset.typed) {
+                    entry.target.dataset.typed = 'true';
+                    this.typeParagraph(entry.target);
                 }
             });
         }, { threshold: 0.3 });
-        
-        this.paragraphs.forEach(p => this.observer.observe(p));
+        this.paragraphs.forEach(p => {
+            if (!p.dataset.text) return;
+            p.textContent = '';
+            this.observer.observe(p);
+        });
+    }
+
+    typeParagraph(el) {
+        const text = el.dataset.text;
+        if (!text) return;
+        let i = 0;
+        el.classList.add('visible', 'typing');
+        const interval = setInterval(() => {
+            el.textContent = text.substring(0, i + 1);
+            i++;
+            if (i >= text.length) {
+                clearInterval(interval);
+                el.classList.remove('typing');
+            }
+        }, 50);
+    }
+}
+
+// ========================================
+// Preloader
+// ========================================
+class Preloader {
+    constructor() {
+        this.loaded = 0;
+        this.total = 0;
+        this.complete = false;
+        this.trackAssets();
+    }
+
+    trackAssets() {
+        const images = document.querySelectorAll('img');
+        this.total += images.length;
+        images.forEach(img => {
+            if (img.complete) this.increment();
+            else {
+                img.onload = () => this.increment();
+                img.onerror = () => this.increment();
+            }
+        });
+
+        const audio = document.getElementById('bgMusic');
+        if (audio) {
+            this.total++;
+            audio.addEventListener('canplaythrough', () => this.increment(), { once: true });
+        }
+
+        this.total++;
+        document.fonts.ready.then(() => this.increment());
+
+        if (this.total === 0) {
+            this.total = 1;
+            this.increment();
+        }
+    }
+
+    increment() {
+        this.loaded++;
+        const percent = Math.min(Math.round((this.loaded / this.total) * 100), 100);
+        if (elements.progressBar) elements.progressBar.style.width = percent + '%';
+        if (elements.progressText) elements.progressText.textContent = percent + '%';
+        if (percent >= 100) this.complete = true;
+    }
+
+    isComplete() {
+        return this.complete;
+    }
+}
+
+// ========================================
+// Parallax Scrolling
+// ========================================
+class ParallaxScroll {
+    constructor() {
+        this.layers = document.querySelectorAll('[data-parallax]');
+        if (this.layers.length === 0) return;
+        this.ticking = false;
+        window.addEventListener('scroll', () => this.onScroll(), { passive: true });
+    }
+
+    onScroll() {
+        if (!this.ticking) {
+            requestAnimationFrame(() => {
+                const scrollY = window.scrollY;
+                this.layers.forEach(el => {
+                    const speed = parseFloat(el.dataset.parallax) || 0.5;
+                    el.style.transform = `translateY(${scrollY * speed * -0.1}px)`;
+                });
+                this.ticking = false;
+            });
+            this.ticking = true;
+        }
+    }
+}
+
+// ========================================
+// Cherry Blossom Petal Rain
+// ========================================
+class PetalRain {
+    constructor() {
+        this.container = document.getElementById('petalContainer');
+        if (!this.container) return;
+        this.petals = ['🌸', '🌸', '🌸', '🌸', '🌸', '🌺', '🌸'];
+        this.interval = setInterval(() => this.spawn(), 600);
+    }
+
+    spawn() {
+        const petal = document.createElement('div');
+        petal.className = 'petal';
+        petal.textContent = this.petals[Math.floor(Math.random() * this.petals.length)];
+        petal.style.left = Math.random() * 100 + '%';
+        petal.style.fontSize = (Math.random() * 12 + 14) + 'px';
+        petal.style.animation = `petalFall ${Math.random() * 7 + 10}s linear forwards`;
+        this.container.appendChild(petal);
+        setTimeout(() => petal.remove(), 17000);
+    }
+}
+
+// ========================================
+// Photo Slideshow
+// ========================================
+class PhotoSlideshow {
+    constructor() {
+        this.slides = document.querySelectorAll('.slideshow-slide');
+        this.dotsContainer = document.getElementById('slideshowDots');
+        this.toggleBtn = document.getElementById('slideshowToggle');
+        if (this.slides.length === 0) return;
+        this.currentIndex = 0;
+        this.playing = true;
+        this.interval = null;
+        this.init();
+    }
+
+    init() {
+        this.createDots();
+        this.showSlide(0);
+        this.startAutoplay();
+        this.bindEvents();
+        this.slides.forEach(s => {
+            s.addEventListener('click', () => {
+                const img = s.querySelector('img');
+                const caption = s.querySelector('.gallery-caption')?.textContent || '';
+                if (elements.lightbox && elements.lightboxImage) {
+                    elements.lightboxImage.src = img.src;
+                    elements.lightboxCaption.textContent = caption;
+                    elements.lightbox.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                }
+            });
+        });
+    }
+
+    createDots() {
+        if (!this.dotsContainer) return;
+        this.slides.forEach((_, i) => {
+            const dot = document.createElement('span');
+            dot.className = 'slideshow-dot';
+            dot.addEventListener('click', () => this.goTo(i));
+            this.dotsContainer.appendChild(dot);
+        });
+    }
+
+    showSlide(index) {
+        this.slides.forEach((s, i) => {
+            s.classList.toggle('active', i === index);
+        });
+        if (this.dotsContainer) {
+            this.dotsContainer.querySelectorAll('.slideshow-dot').forEach((d, i) => {
+                d.classList.toggle('active', i === index);
+            });
+        }
+        this.currentIndex = index;
+    }
+
+    goTo(index) {
+        this.showSlide(index);
+        this.resetAutoplay();
+    }
+
+    next() {
+        this.showSlide((this.currentIndex + 1) % this.slides.length);
+    }
+
+    startAutoplay() {
+        this.interval = setInterval(() => this.next(), 4000);
+    }
+
+    resetAutoplay() {
+        clearInterval(this.interval);
+        this.startAutoplay();
+    }
+
+    toggle() {
+        if (this.playing) {
+            clearInterval(this.interval);
+            if (this.toggleBtn) this.toggleBtn.textContent = '▶';
+        } else {
+            this.startAutoplay();
+            if (this.toggleBtn) this.toggleBtn.textContent = '⏸';
+        }
+        this.playing = !this.playing;
+    }
+
+    bindEvents() {
+        if (this.toggleBtn) {
+            this.toggleBtn.addEventListener('click', () => this.toggle());
+        }
     }
 }
 
@@ -599,10 +837,12 @@ class KeyboardShortcuts {
             elements.bgMusic.pause();
             if (fabMusic) fabMusic.textContent = '🎵';
             if (fabMusic) fabMusic.classList.remove('playing');
+            if (window.audioWave) window.audioWave.hide();
         } else {
             elements.bgMusic.play().catch(() => {});
             if (fabMusic) fabMusic.textContent = '🎶';
             if (fabMusic) fabMusic.classList.add('playing');
+            if (window.audioWave) window.audioWave.show();
         }
         this.musicPlaying = !this.musicPlaying;
     }
@@ -693,18 +933,118 @@ class HeroImage3D {
 }
 
 // ========================================
+// Long Press Hidden Message
+// ========================================
+class LongPress {
+    constructor() {
+        this.heroImage = document.getElementById('heroImage');
+        this.overlay = document.getElementById('secretOverlay');
+        this.timer = null;
+        this.hint = document.getElementById('longPressHint');
+        this.bindEvents();
+    }
+
+    bindEvents() {
+        if (!this.heroImage || !this.overlay) return;
+
+        // Mouse events
+        this.heroImage.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            this.startTimer();
+        });
+
+        this.heroImage.addEventListener('mouseup', () => this.cancelTimer());
+        this.heroImage.addEventListener('mouseleave', () => this.cancelTimer());
+
+        // Touch events
+        this.heroImage.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            this.startTimer();
+        }, { passive: false });
+
+        this.heroImage.addEventListener('touchend', () => this.cancelTimer());
+        this.heroImage.addEventListener('touchcancel', () => this.cancelTimer());
+
+        // Dismiss overlay
+        this.overlay.addEventListener('click', () => this.hideOverlay());
+        this.overlay.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            this.hideOverlay();
+        });
+    }
+
+    startTimer() {
+        this.timer = setTimeout(() => {
+            this.showOverlay();
+        }, 500);
+    }
+
+    cancelTimer() {
+        if (this.timer) {
+            clearTimeout(this.timer);
+            this.timer = null;
+        }
+    }
+
+    showOverlay() {
+        this.overlay.classList.add('show');
+        if (this.hint) this.hint.style.opacity = '0';
+    }
+
+    hideOverlay() {
+        this.overlay.classList.remove('show');
+    }
+}
+
+// ========================================
+// Audio Wave Visualizer
+// ========================================
+class AudioWave {
+    constructor() {
+        this.wave = document.getElementById('audioWave');
+    }
+
+    show() {
+        if (this.wave) this.wave.classList.add('playing');
+    }
+
+    hide() {
+        if (this.wave) this.wave.classList.remove('playing');
+    }
+}
+
+// ========================================
 // Loader
 // ========================================
 class Loader {
-    constructor() {
+    constructor(preloader) {
+        this.preloader = preloader;
+        this.dismissed = false;
         this.bindEvents();
+        this.checkAutoDismiss();
     }
 
     bindEvents() {
         elements.loader.addEventListener('click', () => this.hide());
     }
 
+    checkAutoDismiss() {
+        const check = () => {
+            if (this.dismissed) return;
+            if (this.preloader.isComplete()) {
+                setTimeout(() => {
+                    if (!this.dismissed) this.hide();
+                }, 800);
+            } else {
+                setTimeout(check, 300);
+            }
+        };
+        setTimeout(check, 1000);
+    }
+
     hide() {
+        if (this.dismissed) return;
+        this.dismissed = true;
         elements.loader.classList.add('hidden');
         elements.mainSite.classList.remove('hidden');
         elements.mainSite.classList.add('visible');
@@ -735,6 +1075,7 @@ function initMusicPopup() {
                 fabMusic.textContent = '🎶';
                 fabMusic.classList.add('playing');
             }
+            if (window.audioWave) window.audioWave.show();
             // Update keyboard shortcuts state
             if (window.musicShortcut) window.musicShortcut.musicPlaying = true;
             // Close popup
@@ -767,22 +1108,30 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.style.overflow = 'hidden';
     
     // Initialize all components
+    const preloader = new Preloader();
     const particleSystem = new ParticleSystem(elements.canvas);
     const customCursor = new CustomCursor();
     const floatingHearts = new FloatingHearts(elements.floatingHearts);
-    const loader = new Loader();
+    const petalRain = new PetalRain();
+    const loader = new Loader(preloader);
     
     // Initialize after loader
     const quotesCarousel = new QuotesCarousel();
     const countdownTimer = new CountdownTimer();
     const milestonesAnimator = new MilestonesAnimator();
+    const scrollReveal = new ScrollReveal();
     const gallery = new Gallery();
-    const loveLetterReveal = new LoveLetterReveal();
+    const typewriter = new TypewriterEffect();
     const confetti = new ConfettiEffect();
     const dayNightMode = new DayNightMode();
     const keyboardShortcuts = new KeyboardShortcuts(confetti);
     const navigation = new Navigation();
     const heroImage3D = new HeroImage3D();
+    const parallaxScroll = new ParallaxScroll();
+    const slideshow = new PhotoSlideshow();
+    const longPress = new LongPress();
+    window.audioWave = new AudioWave();
+    window.musicShortcut = keyboardShortcuts;
     
     // Update footer date
     updateFooterDate();

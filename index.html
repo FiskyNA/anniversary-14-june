@@ -18,7 +18,11 @@
                     <path d="M50 88 C25 65, 5 45, 5 28 C5 12, 18 2, 30 2 C40 2, 48 8, 50 15 C52 8, 60 2, 70 2 C82 2, 95 12, 95 28 C95 45, 75 65, 50 88Z" fill="#FF6B8A"/>
                 </svg>
             </div>
-            <p class="loader-text">Click to Open Our Love Letter</p>
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <p class="progress-text" id="progressText">0%</p>
+            <p class="loader-text">Loading our love story...</p>
             <div class="pulse-ring"></div>
         </div>
     </div>
@@ -52,15 +56,17 @@
 
         <!-- Hero Section -->
         <section id="home" class="hero">
-            <div class="hero-bg">
+            <div class="hero-bg" data-parallax="0.3">
                 <div class="floating-hearts" id="floatingHearts"></div>
+                <div class="petal-container" id="petalContainer"></div>
             </div>
             <div class="hero-content">
-                <div class="hero-image-wrapper">
+                <div class="hero-image-wrapper" data-parallax="0.7">
                     <img src="images/anniversary.jpeg" alt="Our Anniversary" class="hero-image" id="heroImage">
                     <div class="hero-image-glow"></div>
                 </div>
-                <h1 class="hero-title">
+                <p class="long-press-hint" id="longPressHint">Hold my photo...</p>
+                <h1 class="hero-title" data-parallax="0.9">
                     <span class="title-line">Happy</span>
                     <span class="title-line">Anniversary</span>
                     <span class="title-line title-accent">My Love</span>
@@ -73,8 +79,18 @@
             </div>
         </section>
 
+        <!-- Secret Message Overlay -->
+        <div class="secret-overlay" id="secretOverlay">
+            <div class="secret-message">
+                <div class="secret-emoji">❤️</div>
+                <p class="secret-text">Har janam mein tumhari</p>
+                <p class="secret-sub">Tum meri ho, main tumhara — forever</p>
+                <p class="secret-dismiss">Tap anywhere to close</p>
+            </div>
+        </div>
+
         <!-- Love Quotes Section -->
-        <section id="quotes" class="quotes-section">
+        <section id="quotes" class="quotes-section reveal">
             <div class="section-header">
                 <h2 class="section-title">Words From My Heart</h2>
                 <div class="title-decoration">💕</div>
@@ -120,6 +136,31 @@
                     <p class="quote-text">A million times over, I will always choose you.</p>
                     <p class="quote-translation"></p>
                 </div>
+                <div class="quote-card">
+                    <div class="quote-mark">"</div>
+                    <p class="quote-text">Tu meri duaon mein hai, tu meri neendon mein hai</p>
+                    <p class="quote-translation">You're in my prayers, you're in my dreams.</p>
+                </div>
+                <div class="quote-card">
+                    <div class="quote-mark">"</div>
+                    <p class="quote-text">Tere bina hum bhi the, par ab tumhare bina hum nahi</p>
+                    <p class="quote-translation">I existed without you, but now I can't.</p>
+                </div>
+                <div class="quote-card">
+                    <div class="quote-mark">"</div>
+                    <p class="quote-text">Duniya ki bheed mein bhi, sirf tumhari aawaaz sun'ta hoon</p>
+                    <p class="quote-translation">In a crowd of millions, I only hear your voice.</p>
+                </div>
+                <div class="quote-card">
+                    <div class="quote-mark">"</div>
+                    <p class="quote-text">Tumhari muskaan meri sabse khoobsurat kahani hai</p>
+                    <p class="quote-translation">Your smile is my most beautiful story.</p>
+                </div>
+                <div class="quote-card">
+                    <div class="quote-mark">"</div>
+                    <p class="quote-text">Har janam mein tumhe dhoondunga, ye mera waada hai</p>
+                    <p class="quote-translation">I'll find you every lifetime, this is my promise.</p>
+                </div>
             </div>
             <div class="quote-nav">
                 <button class="quote-btn prev" aria-label="Previous quote">‹</button>
@@ -129,7 +170,7 @@
         </section>
 
         <!-- Countdown Section -->
-        <section id="countdown" class="countdown-section">
+        <section id="countdown" class="countdown-section reveal">
             <div class="section-header">
                 <h2 class="section-title">Counting Every Moment</h2>
                 <div class="title-decoration">⏰</div>
@@ -162,33 +203,59 @@
             <div class="time-together">
                 <h3>We've Been Together For</h3>
                 <div class="time-display">
-                    <span id="togetherYears">0</span> Years
-                    <span id="togetherMonths">0</span> Months
-                    <span id="togetherDays">0</span> Days
+                    <div class="time-unit">
+                        <span class="time-number" id="togetherYears">0</span>
+                        <span class="time-label">Years</span>
+                    </div>
+                    <div class="time-unit">
+                        <span class="time-number" id="togetherMonths">0</span>
+                        <span class="time-label">Months</span>
+                    </div>
+                    <div class="time-unit">
+                        <span class="time-number" id="togetherDays">0</span>
+                        <span class="time-label">Days</span>
+                    </div>
+                    <div class="time-unit">
+                        <span class="time-number" id="togetherHours">0</span>
+                        <span class="time-label">Hours</span>
+                    </div>
+                    <div class="time-unit">
+                        <span class="time-number" id="togetherMinutes">0</span>
+                        <span class="time-label">Minutes</span>
+                    </div>
+                    <div class="time-unit">
+                        <span class="time-number" id="togetherSeconds">0</span>
+                        <span class="time-label">Seconds</span>
+                    </div>
                 </div>
             </div>
         </section>
 
         <!-- Photo Gallery Section -->
-        <section id="gallery" class="gallery-section">
+        <section id="gallery" class="gallery-section reveal">
             <div class="section-header">
                 <h2 class="section-title">Our Beautiful Moments</h2>
                 <div class="title-decoration">📸</div>
             </div>
-            <div class="gallery-grid" id="galleryGrid">
-                <div class="gallery-item" data-caption="Our First Photo Together">
-                    <img src="images/anniversary.jpeg" alt="Our Moment" loading="lazy">
-                    <div class="gallery-overlay">
-                        <span class="gallery-caption">Our First Photo Together</span>
+            <div class="slideshow-container" id="slideshowContainer">
+                <div class="slideshow-track" id="slideshowTrack">
+                    <div class="gallery-item slideshow-slide" data-caption="Our First Photo Together">
+                        <img src="images/anniversary.jpeg" alt="Our Moment" loading="lazy">
+                        <div class="gallery-overlay">
+                            <span class="gallery-caption">Our First Photo Together</span>
+                        </div>
                     </div>
                 </div>
-                <!-- Add more images here as you add them to the images folder -->
+                <div class="slideshow-controls">
+                    <span class="slideshow-dots" id="slideshowDots"></span>
+                    <button class="slideshow-btn" id="slideshowToggle" aria-label="Pause slideshow">⏸</button>
+                </div>
             </div>
-            <p class="gallery-hint">Click on photos to view them larger</p>
+            <p class="gallery-hint">Tap photo to view larger · Slideshow auto-plays</p>
         </section>
 
         <!-- Love Letter Section -->
-        <section id="letter" class="letter-section">
+        <section id="letter" class="letter-section reveal">
             <div class="section-header">
                 <h2 class="section-title">A Letter For You</h2>
                 <div class="title-decoration">💌</div>
@@ -197,12 +264,12 @@
                 <div class="letter-paper">
                     <div class="letter-content">
                         <p class="letter-greeting">My Dearest Love,</p>
-                        <p class="letter-paragraph" data-reveal="1">From the moment you walked into my life, everything changed. The world became more colorful, more beautiful, more meaningful.</p>
-                        <p class="letter-paragraph" data-reveal="2">You are my sun on the cloudiest days, my smile when I forget how to laugh, my strength when I feel weak.</p>
-                        <p class="letter-paragraph" data-reveal="3">Every day with you is a gift I never knew I needed. Every moment is a memory I'll treasure forever.</p>
-                        <p class="letter-paragraph" data-reveal="4">Tere bina meri zindagi adhoori hai. You complete me in ways words cannot express.</p>
-                        <p class="letter-paragraph" data-reveal="5">I promise to love you today, tomorrow, and every day after that. Through every storm, through every sunrise, through every lifetime.</p>
-                        <p class="letter-paragraph" data-reveal="6">You are my forever, my always, my everything.</p>
+                        <p class="letter-paragraph" data-reveal="1" data-text="From the moment you walked into my life, everything changed. The world became more colorful, more beautiful, more meaningful."></p>
+                        <p class="letter-paragraph" data-reveal="2" data-text="You are my sun on the cloudiest days, my smile when I forget how to laugh, my strength when I feel weak."></p>
+                        <p class="letter-paragraph" data-reveal="3" data-text="Every day with you is a gift I never knew I needed. Every moment is a memory I'll treasure forever."></p>
+                        <p class="letter-paragraph" data-reveal="4" data-text="Tere bina meri zindagi adhoori hai. You complete me in ways words cannot express."></p>
+                        <p class="letter-paragraph" data-reveal="5" data-text="I promise to love you today, tomorrow, and every day after that. Through every storm, through every sunrise, through every lifetime."></p>
+                        <p class="letter-paragraph" data-reveal="6" data-text="You are my forever, my always, my everything."></p>
                         <p class="letter-signature">Forever Yours ❤️</p>
                     </div>
                 </div>
@@ -226,6 +293,9 @@
                 <button class="fab-btn" id="fabConfetti" aria-label="Confetti">🎉</button>
                 <button class="fab-btn" id="fabHearts" aria-label="Hearts">❤️</button>
                 <button class="fab-btn" id="fabMusic" aria-label="Music">🎵</button>
+                <div class="audio-wave" id="audioWave">
+                    <span></span><span></span><span></span><span></span><span></span>
+                </div>
             </div>
         </div>
             </div>
