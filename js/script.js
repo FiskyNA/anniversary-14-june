@@ -677,6 +677,7 @@ class Loader {
 
     hide() {
         elements.loader.classList.add('hidden');
+        elements.mainSite.classList.remove('hidden');
         elements.mainSite.classList.add('visible');
         document.body.style.overflow = '';
     }

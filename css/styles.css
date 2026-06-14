@@ -1062,7 +1062,11 @@ kbd {
     pointer-events: none;
 }
 
-.main-site.visible {
+#main-site {
+    transition: opacity 0.8s ease, visibility 0.8s ease;
+}
+
+#main-site.visible {
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
