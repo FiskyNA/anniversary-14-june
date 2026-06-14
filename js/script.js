@@ -421,7 +421,6 @@ class CountdownTimer {
         }
     }
 }
-}
 
 // ========================================
 // Milestones Animation
