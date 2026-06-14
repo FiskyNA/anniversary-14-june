@@ -384,20 +384,20 @@ class CountdownTimer {
     }
 
     checkAnniversary(istNow) {
-        const start = CONFIG.anniversary.date;
-        const today = new Date(istNow);
-        today.setHours(0, 0, 0, 0);
+        // Get IST date components properly
+        const istString = istNow.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+        const istParts = new Date(istString);
 
-        const startDay = new Date(start);
-        startDay.setHours(0, 0, 0, 0);
+        const startY = 2026, startM = 2, startD = 14;
+        const curY = istParts.getFullYear();
+        const curM = istParts.getMonth();
+        const curD = istParts.getDate();
 
-        const diffMs = today - startDay;
-        const totalDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-        const totalMonths = (today.getFullYear() - start.getFullYear()) * 12 + (today.getMonth() - start.getMonth());
-        const isSameDayOfMonth = today.getDate() === start.getDate();
+        const totalMonths = (curY - startY) * 12 + (curM - startM);
+        const totalDays = Math.floor((istParts - new Date(startY, startM, startD)) / (1000 * 60 * 60 * 24));
+        const isSameDay = curD === startD;
 
-        if (isSameDayOfMonth && today >= start) {
-            const labels = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
+        if (isSameDay && totalMonths > 0) {
             const name = totalMonths <= 12 ? `${totalMonths} Month${totalMonths !== 1 ? 's' : ''}` : `${Math.floor(totalMonths / 12)} Year${Math.floor(totalMonths / 12) !== 1 ? 's' : ''}`;
             return {
                 isAnniversary: true,
@@ -470,13 +470,23 @@ class CountdownTimer {
     }
 
     updateTogether(istNow) {
-        const start = CONFIG.anniversary.date;
-        let months = (istNow.getFullYear() - start.getFullYear()) * 12 + (istNow.getMonth() - start.getMonth());
-        let days = istNow.getDate() - start.getDate();
+        // Get IST date components properly
+        const istString = istNow.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+        const istParts = new Date(istString);
+
+        const startY = 2026, startM = 2, startD = 14; // March = month 2 (0-indexed)
+        const curY = istParts.getFullYear();
+        const curM = istParts.getMonth();
+        const curD = istParts.getDate();
+
+        let months = (curY - startY) * 12 + (curM - startM);
+        let days = curD - startD;
+
         if (days < 0) {
             months--;
-            days += new Date(istNow.getFullYear(), istNow.getMonth(), 0).getDate();
+            days += new Date(curY, curM, 0).getDate();
         }
+
         const years = Math.floor(months / 12);
         const remainingMonths = months % 12;
 
