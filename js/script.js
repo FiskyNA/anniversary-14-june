@@ -324,113 +324,123 @@ class QuotesCarousel {
 }
 
 // ========================================
-// Countdown Timer (Monthly Milestones)
+// IST Helper
+// ========================================
+function getISTDate() {
+    const now = new Date();
+    const utcMs = now.getTime() + now.getTimezoneOffset() * 60000;
+    return new Date(utcMs + 5.5 * 60 * 60 * 1000);
+}
+
+function istDateStr(y, m, d) {
+    return `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+}
+
+// ========================================
+// Countdown Timer
 // ========================================
 class CountdownTimer {
     constructor() {
-        this.anniversary = CONFIG.anniversary.date;
-        this.milestones = [];
-        this.buildMilestones();
+        this.startY = 2026;
+        this.startM = 2;
+        this.startD = 14;
+        this.celebrated = false;
         this.update();
         setInterval(() => this.update(), 1000);
     }
 
-    buildMilestones() {
-        const start = new Date(this.anniversary);
-        const labels = [
-            { m: 1, text: '1 Month', emoji: '🌸' },
-            { m: 2, text: '2 Months', emoji: '💕' },
-            { m: 3, text: '3 Months', emoji: '💖' },
-            { m: 4, text: '4 Months', emoji: '💗' },
-            { m: 5, text: '5 Months', emoji: '💝' },
-            { m: 6, text: '6 Months', emoji: '✨' },
-            { m: 7, text: '7 Months', emoji: '🌟' },
-            { m: 8, text: '8 Months', emoji: '💫' },
-            { m: 9, text: '9 Months', emoji: '🎆' },
-            { m: 10, text: '10 Months', emoji: '🎇' },
-            { m: 11, text: '11 Months', emoji: '🎉' },
-            { m: 12, text: '1 Year', emoji: '🎂' },
-            { m: 13, text: '1 Year 1 Month', emoji: '💞' },
-            { m: 14, text: '1 Year 2 Months', emoji: '💕' },
-            { m: 15, text: '1 Year 3 Months', emoji: '💖' },
-            { m: 18, text: '1.5 Years', emoji: '✨' },
-            { m: 24, text: '2 Years', emoji: '💑' },
-            { m: 36, text: '3 Years', emoji: '💍' },
-            { m: 60, text: '5 Years', emoji: '👑' },
-            { m: 120, text: '10 Years', emoji: '💍' }
-        ];
-        labels.forEach(({ m, text, emoji }) => {
-            const d = new Date(start);
-            d.setMonth(d.getMonth() + m);
-            this.milestones.push({ date: d, label: text, emoji });
-        });
-    }
-
     update() {
-        const now = new Date();
-        const istOffset = 5.5 * 60 * 60 * 1000;
-        const istNow = new Date(now.getTime() + istOffset);
+        const ist = getISTDate();
+        const y = ist.getFullYear();
+        const m = ist.getMonth();
+        const d = ist.getDate();
+        const h = ist.getHours();
+        const min = ist.getMinutes();
+        const s = ist.getSeconds();
 
-        // Check if today is an anniversary
-        const todayCheck = this.checkAnniversary(istNow);
-        if (todayCheck.isAnniversary) {
-            this.showSpecialCelebration(todayCheck);
+        const nowMs = Date.now();
+
+        // Anniversary check
+        const totalMonths = (y - this.startY) * 12 + (m - this.startM);
+        if (d === 14 && totalMonths > 0 && !this.celebrated) {
+            this.celebrated = true;
+            this.showCelebration(totalMonths);
         }
+        if (d !== 14) this.celebrated = false;
 
-        // Find next milestone
-        let nextMilestone = this.milestones.find(ms => ms.date > istNow);
-        if (!nextMilestone) {
-            nextMilestone = this.milestones[this.milestones.length - 1];
+        // Next 14th
+        let nextY = y, nextM = m;
+        if (d >= 14) {
+            nextM++;
+            if (nextM > 11) { nextM = 0; nextY++; }
         }
+        const targetMs = new Date(nextY, nextM, 14, 0, 0, 0).getTime();
+        const currentMs = new Date(y, m, d, h, min, s).getTime();
+        const diff = targetMs - currentMs;
 
-        const diff = nextMilestone.date - istNow;
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+        const days = Math.floor(diff / 86400000);
+        const hours = Math.floor((diff % 86400000) / 3600000);
+        const minutes = Math.floor((diff % 3600000) / 60000);
+        const seconds = Math.floor((diff % 60000) / 1000);
 
-        this.updateDisplay(days, hours, minutes, seconds);
-        this.updateMilestoneLabel(nextMilestone);
-        this.updateTogether(istNow);
+        this.animate(elements.days, days);
+        this.animate(elements.hours, hours);
+        this.animate(elements.minutes, minutes);
+        this.animate(elements.seconds, seconds);
+
+        // Milestone label
+        const nextMonths = totalMonths + 1;
+        const emojis = ['🌸','💕','💖','💗','💝','✨','🌟','💫','🎆','🎇','🎉','🎂'];
+        const emoji = emojis[(nextMonths - 1) % emojis.length] || '❤️';
+        let label;
+        if (nextMonths <= 12) {
+            label = `${nextMonths} Month${nextMonths > 1 ? 's' : ''}`;
+        } else {
+            const y2 = Math.floor(nextMonths / 12);
+            const m2 = nextMonths % 12;
+            label = `${y2} Year${y2 > 1 ? 's' : ''}${m2 ? ' ' + m2 + ' Month' + (m2 > 1 ? 's' : '') : ''}`;
+        }
+        const labelEl = document.getElementById('nextMilestoneLabel');
+        if (labelEl) labelEl.textContent = `${emoji} Next: ${label} — 14/${String(nextM + 1).padStart(2, '0')}/${nextY}`;
+
+        // Together counter
+        let tMonths = totalMonths;
+        let tDays = d - this.startD;
+        if (tDays < 0) {
+            tMonths--;
+            tDays += new Date(y, m, 0).getDate();
+        }
+        const years = Math.floor(tMonths / 12);
+        const remMonths = tMonths % 12;
+
+        if (elements.togetherYears) elements.togetherYears.textContent = years;
+        if (elements.togetherMonths) elements.togetherMonths.textContent = remMonths;
+        if (elements.togetherDays) elements.togetherDays.textContent = tDays;
     }
 
-    checkAnniversary(istNow) {
-        // Get IST date components properly
-        const istString = istNow.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
-        const istParts = new Date(istString);
-
-        const startY = 2026, startM = 2, startD = 14;
-        const curY = istParts.getFullYear();
-        const curM = istParts.getMonth();
-        const curD = istParts.getDate();
-
-        const totalMonths = (curY - startY) * 12 + (curM - startM);
-        const totalDays = Math.floor((istParts - new Date(startY, startM, startD)) / (1000 * 60 * 60 * 24));
-        const isSameDay = curD === startD;
-
-        if (isSameDay && totalMonths > 0) {
-            const name = totalMonths <= 12 ? `${totalMonths} Month${totalMonths !== 1 ? 's' : ''}` : `${Math.floor(totalMonths / 12)} Year${Math.floor(totalMonths / 12) !== 1 ? 's' : ''}`;
-            return {
-                isAnniversary: true,
-                months: totalMonths,
-                label: name,
-                days: totalDays
-            };
+    animate(el, val) {
+        if (!el) return;
+        if (parseInt(el.textContent) !== val) {
+            el.style.transform = 'translateY(-10px)';
+            el.style.opacity = '0';
+            setTimeout(() => {
+                el.textContent = String(val).padStart(2, '0');
+                el.style.transform = 'translateY(0)';
+                el.style.opacity = '1';
+            }, 150);
         }
-
-        return { isAnniversary: false };
     }
 
-    showSpecialCelebration(info) {
+    showCelebration(months) {
         if (document.getElementById('specialOverlay')) return;
-
+        const name = months <= 12 ? `${months} Month${months > 1 ? 's' : ''}` : `${Math.floor(months / 12)} Year${Math.floor(months / 12) > 1 ? 's' : ''}`;
         const overlay = document.createElement('div');
         overlay.id = 'specialOverlay';
         overlay.innerHTML = `
             <div class="celebration-content">
                 <div class="celebration-emoji">🎉</div>
-                <h1 class="celebration-title">Happy ${info.label} Anniversary!</h1>
-                <p class="celebration-subtitle">Today we celebrate ${info.days} beautiful days together</p>
+                <h1 class="celebration-title">Happy ${name} Anniversary!</h1>
+                <p class="celebration-subtitle">Today we celebrate our love</p>
                 <div class="celebration-hearts">
                     <span>❤️</span><span>💕</span><span>💖</span><span>💗</span><span>💝</span>
                 </div>
@@ -440,67 +450,8 @@ class CountdownTimer {
             </div>
         `;
         document.body.appendChild(overlay);
-
-        // Auto confetti burst
-        setTimeout(() => {
-            const confetti = new ConfettiEffect();
-            confetti.create();
-        }, 500);
-
-        // Continuous confetti every 3 seconds
-        this.celebrationInterval = setInterval(() => {
-            const confetti = new ConfettiEffect();
-            confetti.create();
-        }, 3000);
-    }
-
-    updateMilestoneLabel(ms) {
-        const el = document.getElementById('nextMilestoneLabel');
-        if (el) el.textContent = `${ms.emoji} Next: ${ms.label}`;
-    }
-
-    updateDisplay(days, hours, minutes, seconds) {
-        this.animateNumber(elements.days, days);
-        this.animateNumber(elements.hours, hours);
-        this.animateNumber(elements.minutes, minutes);
-        this.animateNumber(elements.seconds, seconds);
-    }
-
-    animateNumber(element, value) {
-        if (!element) return;
-        const current = parseInt(element.textContent) || 0;
-        if (current !== value) {
-            element.style.transform = 'translateY(-10px)';
-            element.style.opacity = '0';
-            setTimeout(() => {
-                element.textContent = String(value).padStart(2, '0');
-                element.style.transform = 'translateY(0)';
-                element.style.opacity = '1';
-            }, 150);
-        }
-    }
-
-    updateTogether(istNow) {
-        // Simple date calculation using UTC
-        const startY = 2026, startM = 2, startD = 14; // March 14, 2026
-        const curY = istNow.getUTCFullYear();
-        const curM = istNow.getUTCMonth();
-        const curD = istNow.getUTCDate();
-
-        let months = (curY - startY) * 12 + (curM - startM);
-        let days = curD - startD;
-
-        if (days < 0) {
-            months--;
-            days += new Date(curY, curM, 0).getDate();
-        }
-
-        const years = Math.floor(months / 12);
-        const remainingMonths = months % 12;
-
-        if (elements.togetherYears) elements.togetherYears.textContent = years;
-        if (elements.togetherMonths) elements.togetherMonths.textContent = remainingMonths;
-        if (elements.togetherDays) elements.togetherDays.textContent = days;
+        setTimeout(() => new ConfettiEffect().create(), 500);
+        this.celebInterval = setInterval(() => new ConfettiEffect().create(), 3000);
     }
 }
 
