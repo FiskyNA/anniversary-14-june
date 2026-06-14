@@ -554,6 +554,18 @@ class Preloader {
         this.total = 0;
         this.complete = false;
         this.trackAssets();
+        this.safetyTimer();
+    }
+
+    safetyTimer() {
+        setTimeout(() => {
+            if (!this.complete) {
+                this.loaded = this.total;
+                this.complete = true;
+                if (elements.progressBar) elements.progressBar.style.width = '100%';
+                if (elements.progressText) elements.progressText.textContent = '100%';
+            }
+        }, 12000);
     }
 
     trackAssets() {
