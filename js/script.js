@@ -709,12 +709,45 @@ class Loader {
         elements.mainSite.classList.remove('hidden');
         elements.mainSite.classList.add('visible');
         document.body.style.overflow = '';
+        
+        // Show music popup after a short delay
+        setTimeout(() => {
+            const popup = document.getElementById('musicPopup');
+            if (popup) popup.classList.add('show');
+        }, 800);
     }
 }
 
 // ========================================
-// Footer Date
+// Music Permission Popup
 // ========================================
+function initMusicPopup() {
+    const popup = document.getElementById('musicPopup');
+    const yesBtn = document.getElementById('musicYes');
+    const noBtn = document.getElementById('musicNo');
+    const fabMusic = document.getElementById('fabMusic');
+    
+    if (yesBtn) {
+        yesBtn.addEventListener('click', () => {
+            // Play the song
+            elements.bgMusic.play().catch(() => {});
+            if (fabMusic) {
+                fabMusic.textContent = '🎶';
+                fabMusic.classList.add('playing');
+            }
+            // Update keyboard shortcuts state
+            if (window.musicShortcut) window.musicShortcut.musicPlaying = true;
+            // Close popup
+            popup.classList.remove('show');
+        });
+    }
+    
+    if (noBtn) {
+        noBtn.addEventListener('click', () => {
+            popup.classList.remove('show');
+        });
+    }
+}
 function updateFooterDate() {
     const now = new Date();
     const options = { 
@@ -753,6 +786,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Update footer date
     updateFooterDate();
+    
+    // Initialize music popup
+    initMusicPopup();
     
     // Touch support for mobile
     let touchStartX = 0;
