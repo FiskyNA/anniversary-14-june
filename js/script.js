@@ -7,7 +7,7 @@
 // ========================================
 const CONFIG = {
     anniversary: {
-        date: new Date('2026-06-14T00:00:00+05:30'), // IST
+        date: new Date('2026-03-14T00:00:00+05:30'), // IST - We met on 14 March 2026
         hindiMonths: [
             { name: 'Chaitra', start: 'March', end: 'April' },
             { name: 'Vaishakh', start: 'April', end: 'May' },
@@ -324,34 +324,128 @@ class QuotesCarousel {
 }
 
 // ========================================
-// Countdown Timer
+// Countdown Timer (Monthly Milestones)
 // ========================================
 class CountdownTimer {
     constructor() {
         this.anniversary = CONFIG.anniversary.date;
+        this.milestones = [];
+        this.buildMilestones();
         this.update();
         setInterval(() => this.update(), 1000);
+    }
+
+    buildMilestones() {
+        const start = new Date(this.anniversary);
+        const labels = [
+            { m: 1, text: '1 Month', emoji: '🌸' },
+            { m: 2, text: '2 Months', emoji: '💕' },
+            { m: 3, text: '3 Months', emoji: '💖' },
+            { m: 6, text: '6 Months', emoji: '✨' },
+            { m: 9, text: '9 Months', emoji: '🌟' },
+            { m: 12, text: '1 Year', emoji: '🎂' },
+            { m: 24, text: '2 Years', emoji: '💑' },
+            { m: 60, text: '5 Years', emoji: '👑' },
+            { m: 120, text: '10 Years', emoji: '💍' }
+        ];
+        labels.forEach(({ m, text, emoji }) => {
+            const d = new Date(start);
+            d.setMonth(d.getMonth() + m);
+            this.milestones.push({ date: d, label: text, emoji });
+        });
     }
 
     update() {
         const now = new Date();
         const istOffset = 5.5 * 60 * 60 * 1000;
         const istNow = new Date(now.getTime() + istOffset);
-        
-        let nextAnniversary = new Date(this.anniversary);
-        while (nextAnniversary < istNow) {
-            nextAnniversary.setFullYear(nextAnniversary.getFullYear() + 1);
+
+        // Check if today is an anniversary
+        const todayCheck = this.checkAnniversary(istNow);
+        if (todayCheck.isAnniversary) {
+            this.showSpecialCelebration(todayCheck);
         }
-        
-        const diff = nextAnniversary - istNow;
-        
+
+        // Find next milestone
+        let nextMilestone = this.milestones.find(ms => ms.date > istNow);
+        if (!nextMilestone) {
+            nextMilestone = this.milestones[this.milestones.length - 1];
+        }
+
+        const diff = nextMilestone.date - istNow;
         const days = Math.floor(diff / (1000 * 60 * 60 * 24));
         const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-        
+
         this.updateDisplay(days, hours, minutes, seconds);
-        this.updateTogether();
+        this.updateMilestoneLabel(nextMilestone);
+        this.updateTogether(istNow);
+    }
+
+    checkAnniversary(istNow) {
+        const start = CONFIG.anniversary.date;
+        const today = new Date(istNow);
+        today.setHours(0, 0, 0, 0);
+
+        const startDay = new Date(start);
+        startDay.setHours(0, 0, 0, 0);
+
+        const diffMs = today - startDay;
+        const totalDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+        const totalMonths = (today.getFullYear() - start.getFullYear()) * 12 + (today.getMonth() - start.getMonth());
+        const isSameDayOfMonth = today.getDate() === start.getDate();
+
+        if (isSameDayOfMonth && today >= start) {
+            const labels = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
+            const name = totalMonths <= 12 ? `${totalMonths} Month${totalMonths !== 1 ? 's' : ''}` : `${Math.floor(totalMonths / 12)} Year${Math.floor(totalMonths / 12) !== 1 ? 's' : ''}`;
+            return {
+                isAnniversary: true,
+                months: totalMonths,
+                label: name,
+                days: totalDays
+            };
+        }
+
+        return { isAnniversary: false };
+    }
+
+    showSpecialCelebration(info) {
+        if (document.getElementById('specialOverlay')) return;
+
+        const overlay = document.createElement('div');
+        overlay.id = 'specialOverlay';
+        overlay.innerHTML = `
+            <div class="celebration-content">
+                <div class="celebration-emoji">🎉</div>
+                <h1 class="celebration-title">Happy ${info.label} Anniversary!</h1>
+                <p class="celebration-subtitle">Today we celebrate ${info.days} beautiful days together</p>
+                <div class="celebration-hearts">
+                    <span>❤️</span><span>💕</span><span>💖</span><span>💗</span><span>💝</span>
+                </div>
+                <button class="celebration-btn" onclick="this.parentElement.parentElement.remove()">
+                    I Love You Too ❤️
+                </button>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+
+        // Auto confetti burst
+        setTimeout(() => {
+            const confetti = new ConfettiEffect();
+            confetti.create();
+        }, 500);
+
+        // Continuous confetti every 3 seconds
+        this.celebrationInterval = setInterval(() => {
+            const confetti = new ConfettiEffect();
+            confetti.create();
+        }, 3000);
+    }
+
+    updateMilestoneLabel(ms) {
+        const el = document.getElementById('nextMilestoneLabel');
+        if (el) el.textContent = `${ms.emoji} Next: ${ms.label}`;
     }
 
     updateDisplay(days, hours, minutes, seconds) {
@@ -362,11 +456,11 @@ class CountdownTimer {
     }
 
     animateNumber(element, value) {
+        if (!element) return;
         const current = parseInt(element.textContent) || 0;
         if (current !== value) {
             element.style.transform = 'translateY(-10px)';
             element.style.opacity = '0';
-            
             setTimeout(() => {
                 element.textContent = String(value).padStart(2, '0');
                 element.style.transform = 'translateY(0)';
@@ -375,26 +469,20 @@ class CountdownTimer {
         }
     }
 
-    updateTogether() {
-        const now = new Date();
+    updateTogether(istNow) {
         const start = CONFIG.anniversary.date;
-        
-        let years = now.getFullYear() - start.getFullYear();
-        let months = now.getMonth() - start.getMonth();
-        let days = now.getDate() - start.getDate();
-        
+        let months = (istNow.getFullYear() - start.getFullYear()) * 12 + (istNow.getMonth() - start.getMonth());
+        let days = istNow.getDate() - start.getDate();
         if (days < 0) {
             months--;
-            days += new Date(now.getFullYear(), now.getMonth(), 0).getDate();
+            days += new Date(istNow.getFullYear(), istNow.getMonth(), 0).getDate();
         }
-        if (months < 0) {
-            years--;
-            months += 12;
-        }
-        
-        elements.togetherYears.textContent = years;
-        elements.togetherMonths.textContent = months;
-        elements.togetherDays.textContent = days;
+        const years = Math.floor(months / 12);
+        const remainingMonths = months % 12;
+
+        if (elements.togetherYears) elements.togetherYears.textContent = years;
+        if (elements.togetherMonths) elements.togetherMonths.textContent = remainingMonths;
+        if (elements.togetherDays) elements.togetherDays.textContent = days;
     }
 }
 
@@ -750,4 +838,44 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     console.log('❤️ Anniversary Website Loaded - Press L for confetti, H for hearts, M for music');
+
+    // ========================================
+    // Floating Action Buttons (Mobile Friendly)
+    // ========================================
+    const fabToggle = document.getElementById('fabToggle');
+    const fabMenu = document.getElementById('fabMenu');
+    const fabConfetti = document.getElementById('fabConfetti');
+    const fabHearts = document.getElementById('fabHearts');
+    const fabMusic = document.getElementById('fabMusic');
+
+    if (fabToggle) {
+        fabToggle.addEventListener('click', () => {
+            fabToggle.classList.toggle('open');
+            fabMenu.classList.toggle('open');
+        });
+    }
+
+    if (fabConfetti) {
+        fabConfetti.addEventListener('click', () => {
+            confetti.create();
+            fabToggle.classList.remove('open');
+            fabMenu.classList.remove('open');
+        });
+    }
+
+    if (fabHearts) {
+        fabHearts.addEventListener('click', () => {
+            keyboardShortcuts.createHeartRain();
+            fabToggle.classList.remove('open');
+            fabMenu.classList.remove('open');
+        });
+    }
+
+    if (fabMusic) {
+        fabMusic.addEventListener('click', () => {
+            keyboardShortcuts.toggleMusic();
+            fabToggle.classList.remove('open');
+            fabMenu.classList.remove('open');
+        });
+    }
 });

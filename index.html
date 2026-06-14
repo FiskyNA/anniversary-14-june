@@ -66,7 +66,7 @@
                     <span class="title-line">Anniversary</span>
                     <span class="title-line title-accent">My Love</span>
                 </h1>
-                <p class="hero-subtitle">14 June 2026 — Jyeshtha 14, 2083 Vikram Samvat</p>
+                <p class="hero-subtitle">14 March 2026 — Phalguna 14, 2082 Vikram Samvat</p>
                 <div class="scroll-indicator">
                     <span>Scroll Down</span>
                     <div class="scroll-arrow"></div>
@@ -157,8 +157,8 @@
                 </div>
             </div>
             <div class="countdown-message">
-                <p>Until our next <span class="highlight">Anniversary</span></p>
-                <p class="countdown-date">14 June 2027 — Jyeshtha 14, 2084</p>
+                <p>Until our next <span class="highlight">Milestone</span></p>
+                <p class="countdown-date" id="nextMilestoneLabel">✨ Next: Loading...</p>
             </div>
             <div class="time-together">
                 <h3>We've Been Together For</h3>
@@ -180,8 +180,8 @@
                 <!-- Monthly Milestones -->
                 <div class="milestone-card" data-month="1">
                     <div class="milestone-date">
-                        <span class="date-english">14 July 2026</span>
-                        <span class="date-hindu">Ashadha 2083</span>
+                        <span class="date-english">14 April 2026</span>
+                        <span class="date-hindu">Vaishakh 2082</span>
                     </div>
                     <div class="milestone-content">
                         <div class="milestone-icon">🌸</div>
@@ -191,8 +191,8 @@
                 </div>
                 <div class="milestone-card" data-month="2">
                     <div class="milestone-date">
-                        <span class="date-english">14 August 2026</span>
-                        <span class="date-hindu">Shravan 2083</span>
+                        <span class="date-english">14 May 2026</span>
+                        <span class="date-hindu">Jyeshtha 2082</span>
                     </div>
                     <div class="milestone-content">
                         <div class="milestone-icon">💕</div>
@@ -202,8 +202,8 @@
                 </div>
                 <div class="milestone-card" data-month="3">
                     <div class="milestone-date">
-                        <span class="date-english">14 September 2026</span>
-                        <span class="date-hindu">Bhadrapada 2083</span>
+                        <span class="date-english">14 June 2026</span>
+                        <span class="date-hindu">Ashadha 2082</span>
                     </div>
                     <div class="milestone-content">
                         <div class="milestone-icon">💖</div>
@@ -213,8 +213,8 @@
                 </div>
                 <div class="milestone-card" data-month="6">
                     <div class="milestone-date">
-                        <span class="date-english">14 December 2026</span>
-                        <span class="date-hindu">Pausha 2083</span>
+                        <span class="date-english">14 September 2026</span>
+                        <span class="date-hindu">Ashwin 2082</span>
                     </div>
                     <div class="milestone-content">
                         <div class="milestone-icon">✨</div>
@@ -224,8 +224,8 @@
                 </div>
                 <div class="milestone-card" data-month="9">
                     <div class="milestone-date">
-                        <span class="date-english">14 March 2027</span>
-                        <span class="date-hindu">Chaitra 2084</span>
+                        <span class="date-english">14 December 2026</span>
+                        <span class="date-hindu">Pausha 2082</span>
                     </div>
                     <div class="milestone-content">
                         <div class="milestone-icon">🌟</div>
@@ -235,8 +235,8 @@
                 </div>
                 <div class="milestone-card yearly" data-year="1">
                     <div class="milestone-date">
-                        <span class="date-english">14 June 2027</span>
-                        <span class="date-hindu">Jyeshtha 14, 2084</span>
+                        <span class="date-english">14 March 2027</span>
+                        <span class="date-hindu">Chaitra 14, 2083</span>
                     </div>
                     <div class="milestone-content">
                         <div class="milestone-icon">🎂</div>
@@ -246,8 +246,8 @@
                 </div>
                 <div class="milestone-card yearly" data-year="2">
                     <div class="milestone-date">
-                        <span class="date-english">14 June 2028</span>
-                        <span class="date-hindu">Jyeshtha 14, 2085</span>
+                        <span class="date-english">14 March 2028</span>
+                        <span class="date-hindu">Chaitra 14, 2084</span>
                     </div>
                     <div class="milestone-content">
                         <div class="milestone-icon">💑</div>
@@ -257,8 +257,8 @@
                 </div>
                 <div class="milestone-card yearly" data-year="5">
                     <div class="milestone-date">
-                        <span class="date-english">14 June 2031</span>
-                        <span class="date-hindu">Jyeshtha 14, 2088</span>
+                        <span class="date-english">14 March 2031</span>
+                        <span class="date-hindu">Chaitra 14, 2087</span>
                     </div>
                     <div class="milestone-content">
                         <div class="milestone-icon">👑</div>
@@ -268,8 +268,8 @@
                 </div>
                 <div class="milestone-card yearly" data-year="10">
                     <div class="milestone-date">
-                        <span class="date-english">14 June 2036</span>
-                        <span class="date-hindu">Jyeshtha 14, 2093</span>
+                        <span class="date-english">14 March 2036</span>
+                        <span class="date-hindu">Chaitra 14, 2092</span>
                     </div>
                     <div class="milestone-content">
                         <div class="milestone-icon">💍</div>
@@ -341,9 +341,15 @@
                 </div>
                 <p class="footer-text">Made with ❤️ for the love of my life</p>
                 <p class="footer-date" id="footerDate"></p>
-                <div class="footer-shortcuts">
-                    <p>Press <kbd>L</kbd> for confetti | <kbd>H</kbd> for hearts | <kbd>M</kbd> for music</p>
-                </div>
+        <!-- Floating Action Buttons (Mobile Friendly) -->
+        <div class="fab-container" id="fabContainer">
+            <button class="fab-toggle" id="fabToggle" aria-label="Menu">💝</button>
+            <div class="fab-menu" id="fabMenu">
+                <button class="fab-btn" id="fabConfetti" aria-label="Confetti">🎉</button>
+                <button class="fab-btn" id="fabHearts" aria-label="Hearts">❤️</button>
+                <button class="fab-btn" id="fabMusic" aria-label="Music">🎵</button>
+            </div>
+        </div>
             </div>
         </footer>
     </main>

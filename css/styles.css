@@ -1054,6 +1054,188 @@ kbd {
 }
 
 /* ========================================
+   Floating Action Buttons (Mobile Friendly)
+   ======================================== */
+.fab-container {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 999;
+}
+
+.fab-toggle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: none;
+    background: var(--gradient);
+    font-size: 1.8rem;
+    cursor: pointer;
+    box-shadow: 0 4px 20px var(--glow);
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.fab-toggle:hover {
+    transform: scale(1.1);
+}
+
+.fab-toggle.open {
+    transform: rotate(45deg);
+}
+
+.fab-menu {
+    position: absolute;
+    bottom: 70px;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+}
+
+.fab-menu.open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.fab-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    font-size: 1.4rem;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.fab-btn:hover {
+    background: var(--primary);
+    transform: scale(1.15);
+}
+
+.fab-btn:active {
+    transform: scale(0.95);
+}
+
+@media (max-width: 768px) {
+    .fab-container {
+        bottom: 1.5rem;
+        right: 1.5rem;
+    }
+    .fab-toggle {
+        width: 55px;
+        height: 55px;
+        font-size: 1.6rem;
+    }
+    .fab-btn {
+        width: 46px;
+        height: 46px;
+        font-size: 1.3rem;
+    }
+}
+
+/* ========================================
+   Celebration Overlay
+   ======================================== */
+#specialOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(ellipse at center, rgba(26, 26, 46, 0.95), rgba(15, 15, 26, 0.98));
+    z-index: 10001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.5s ease;
+}
+
+.celebration-content {
+    text-align: center;
+    padding: 2rem;
+    animation: slideUp 0.8s ease;
+}
+
+.celebration-emoji {
+    font-size: 5rem;
+    animation: bounce 1s ease infinite;
+    margin-bottom: 1rem;
+}
+
+.celebration-title {
+    font-family: var(--font-display);
+    font-size: 3.5rem;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 1rem;
+    text-shadow: none;
+    animation: glowPulse 2s ease-in-out infinite;
+}
+
+.celebration-subtitle {
+    font-size: 1.2rem;
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+}
+
+.celebration-hearts {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: center;
+    gap: 0.8rem;
+}
+
+.celebration-hearts span {
+    animation: bounce 1s ease infinite;
+}
+
+.celebration-hearts span:nth-child(1) { animation-delay: 0s; }
+.celebration-hearts span:nth-child(2) { animation-delay: 0.1s; }
+.celebration-hearts span:nth-child(3) { animation-delay: 0.2s; }
+.celebration-hearts span:nth-child(4) { animation-delay: 0.3s; }
+.celebration-hearts span:nth-child(5) { animation-delay: 0.4s; }
+
+.celebration-btn {
+    background: var(--gradient);
+    border: none;
+    color: var(--text);
+    padding: 1rem 2.5rem;
+    font-size: 1.1rem;
+    font-family: var(--font-body);
+    border-radius: 50px;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: 0 4px 20px var(--glow);
+}
+
+.celebration-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 30px var(--glow);
+}
+
+@media (max-width: 768px) {
+    .celebration-title { font-size: 2.2rem; }
+    .celebration-emoji { font-size: 3.5rem; }
+}
+
+/* ========================================
    Hidden Class
    ======================================== */
 .hidden {
