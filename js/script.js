@@ -550,56 +550,40 @@ class TypewriterEffect {
 // ========================================
 class Preloader {
     constructor() {
-        this.loaded = 0;
-        this.total = 0;
         this.complete = false;
-        this.trackAssets();
+        this.progress = 0;
+        this.bar = elements.progressBar;
+        this.text = elements.progressText;
+        this.tick = setInterval(() => this.advance(), 400);
         this.safetyTimer();
+    }
+
+    advance() {
+        if (this.complete) return;
+        this.progress += Math.random() * 18 + 8;
+        if (this.progress >= 100) this.progress = 100;
+        this.update();
+        if (this.progress >= 100) this.finish();
+    }
+
+    finish() {
+        this.complete = true;
+        clearInterval(this.tick);
     }
 
     safetyTimer() {
         setTimeout(() => {
             if (!this.complete) {
-                this.loaded = this.total;
-                this.complete = true;
-                if (elements.progressBar) elements.progressBar.style.width = '100%';
-                if (elements.progressText) elements.progressText.textContent = '100%';
+                this.progress = 100;
+                this.update();
+                this.finish();
             }
-        }, 12000);
+        }, 5000);
     }
 
-    trackAssets() {
-        const images = document.querySelectorAll('img');
-        this.total += images.length;
-        images.forEach(img => {
-            if (img.complete) this.increment();
-            else {
-                img.onload = () => this.increment();
-                img.onerror = () => this.increment();
-            }
-        });
-
-        const audio = document.getElementById('bgMusic');
-        if (audio) {
-            this.total++;
-            audio.addEventListener('canplaythrough', () => this.increment(), { once: true });
-        }
-
-        this.total++;
-        document.fonts.ready.then(() => this.increment());
-
-        if (this.total === 0) {
-            this.total = 1;
-            this.increment();
-        }
-    }
-
-    increment() {
-        this.loaded++;
-        const percent = Math.min(Math.round((this.loaded / this.total) * 100), 100);
-        if (elements.progressBar) elements.progressBar.style.width = percent + '%';
-        if (elements.progressText) elements.progressText.textContent = percent + '%';
-        if (percent >= 100) this.complete = true;
+    update() {
+        if (this.bar) this.bar.style.width = Math.round(this.progress) + '%';
+        if (this.text) this.text.textContent = Math.round(this.progress) + '%';
     }
 
     isComplete() {
